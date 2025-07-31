@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>SafeScape Kids Zone</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; background-color: #f0f8ff; }
+        h1 { color: #ff6347; }
+    </style>
+</head>
+<body>
+    <h1>Welcome to the SafeScape Kids Zone!</h1>
+    <p>Choose a game to play:</p>
+
+    <h2><a href="{% url 'hazard_house_game' %}">Play: Hazard in the House</a></h2>
+    <h2><a href="{% url 'stop_drop_roll_game' %}">Play: Stop, Drop, and Roll</a></h2> <br>
+
+    <br>
+    <a href="{% url 'home' %}">Back to Main Site</a>
+</body>
+</html>

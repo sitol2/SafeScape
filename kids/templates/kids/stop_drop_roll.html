@@ -1,0 +1,72 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Stop, Drop, and Roll Game</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; background-color: #f0f8ff; }
+        h1 { color: #ff6347; }
+        #game-board { display: flex; justify-content: center; gap: 20px; margin-top: 30px; }
+        .action-card { border: 2px solid #ddd; padding: 10px; border-radius: 8px; cursor: pointer; transition: transform 0.2s; }
+        .action-card:hover { transform: scale(1.05); }
+        .action-card img { width: 150px; height: 150px; }
+        #message { margin-top: 20px; font-size: 1.2em; font-weight: bold; min-height: 25px; }
+    </style>
+</head>
+<body>
+    <h1>Stop, Drop, and Roll!</h1>
+    <p>Click the actions in the correct order.</p>
+
+    <div id="game-board">
+        <div class="action-card" data-action="stop">
+            <img src="{% static 'assets/images/stop.png' %}" alt="Stop">
+            <h3>STOP</h3>
+        </div>
+        <div class="action-card" data-action="drop">
+            <img src="{% static 'assets/images/drop.png' %}" alt="Drop">
+            <h3>DROP</h3>
+        </div>
+        <div class="action-card" data-action="roll">
+            <img src="{% static 'assets/images/roll.png' %}" alt="Roll">
+            <h3>ROLL</h3>
+        </div>
+    </div>
+
+    <div id="message"></div>
+    <a href="{% url 'kids_zone_home' %}">Back to Kids Zone</a>
+
+    <script>
+        const correctSequence = ['stop', 'drop', 'roll'];
+        let userSequence = [];
+        const messageElement = document.getElementById('message');
+        const gameBoard = document.getElementById('game-board');
+
+        gameBoard.addEventListener('click', function(event) {
+            // Find the card that was clicked
+            const card = event.target.closest('.action-card');
+            if (!card) return; // Exit if they didn't click on a card
+
+            const action = card.dataset.action;
+            const currentStep = userSequence.length;
+
+            // Check if the clicked action is the correct one for the current step
+            if (action === correctSequence[currentStep]) {
+                userSequence.push(action);
+                messageElement.textContent = 'Correct! What comes next?';
+                card.style.borderColor = 'green'; // Give visual feedback
+
+                // Check for win condition
+                if (userSequence.length === correctSequence.length) {
+                    messageElement.textContent = 'You did it! You know how to Stop, Drop, and Roll!';
+                }
+            } else {
+                messageElement.textContent = 'Oops, wrong order! Try again.';
+                // Reset the game
+                userSequence = [];
+                document.querySelectorAll('.action-card').forEach(c => c.style.borderColor = '#ddd');
+            }
+        });
+    </script>
+</body>
+</html>

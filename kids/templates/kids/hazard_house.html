@@ -1,0 +1,58 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Hazard in the House Game</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; background-color: #f0f8ff; }
+        h1 { color: #ff6347; }
+        #game-container { position: relative; width: 600px; height: 400px; margin: auto; cursor: pointer; }
+        #room-image { width: 100%; height: 100%; }
+    </style>
+</head>
+<body>
+    <h1>Find the Fire Hazards!</h1>
+    <p>Click on the things in the room that could be dangerous.</p>
+    
+    <div id="game-container">
+        <img id="room-image" src="{% static 'assets/images/sample_room.jpg' %}" alt="A sample room">
+    </div>
+
+    <br>
+    <a href="{% url 'kids_zone_home' %}">Back to Kids Zone</a>
+
+    <script>
+        // Define our hazard "hotspots" as objects
+        // Each hotspot has x/y coordinates for its top-left and bottom-right corners.
+        // NOTE: You will need to adjust these coordinates to match the hazards in your own image.
+        const hotspots = [
+            { x1: 50, y1: 150, x2: 150, y2: 250, name: "overloaded socket" },
+            { x1: 400, y1: 200, x2: 500, y2: 300, name: "candle near curtains" }
+        ];
+
+        const gameContainer = document.getElementById('game-container');
+
+        gameContainer.addEventListener('click', function(event) {
+            // Get the user's click coordinates relative to the image
+            const rect = gameContainer.getBoundingClientRect();
+            const clickX = event.clientX - rect.left;
+            const clickY = event.clientY - rect.top;
+
+            let foundHazard = false;
+            // Loop through our hotspots to see if the click was inside any of them
+            for (const spot of hotspots) {
+                if (clickX >= spot.x1 && clickX <= spot.x2 && clickY >= spot.y1 && clickY <= spot.y2) {
+                    alert('You found a hazard: ' + spot.name + '! Good job!');
+                    foundHazard = true;
+                    break; // Stop checking once we've found one
+                }
+            }
+
+            if (!foundHazard) {
+                alert('That looks safe. Try again!');
+            }
+        });
+    </script>
+</body>
+</html>
