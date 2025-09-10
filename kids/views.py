@@ -8,3 +8,6 @@ def hazard_house_game(request):
 
 def stop_drop_roll_game(request):
     return render(request, 'kids/stop_drop_roll.html')
+
+def hero_academy_game(request):
+    return render(request, 'kids/hero_academy_game.html')

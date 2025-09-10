@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Chatbot</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for the floating chatbot */
+        .chat-container { position: fixed; bottom: 2rem; right: 2rem; z-index: 100; }
+        .chat-button { width: 60px; height: 60px; border-radius: 50%; display: flex; align-items: center; justify-content: center; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); cursor: pointer; transition: transform 0.2s ease-in-out; }
+        .chat-button:hover { transform: scale(1.05); }
+        .chat-window { width: 350px; height: 500px; background-color: white; border-radius: 1rem; box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px -5px rgba(0, 0, 0, 0.04); overflow: hidden; flex-direction: column; position: absolute; right: 0; bottom: calc(100% + 1rem); transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out; transform: scale(0.1); transform-origin: bottom right; opacity: 0; pointer-events: none; }
+        .chat-window.open { transform: scale(1); opacity: 1; pointer-events: auto; }
+
+        /* Styles for the Coloring Game */
+        #coloringCanvas {
+            border: 2px solid #374151;
+            cursor: crosshair;
+            background-color: #ffffff;
+            touch-action: none;
+            border-radius: 0.75rem;
+        }
+        .color-btn {
+            border: 2px solid transparent;
+        }
+        .color-btn.active {
+            border-color: #374151;
+        }
+    </style>
+</head>
+<body class="bg-gray-100">
+    <div class="container mx-auto p-8">
+        <h1 class="text-3xl font-bold text-center mb-8">Test Chatbot Implementation</h1>
+        <p class="text-center mb-8">Click the chatbot button in the bottom right corner to test the chatbot functionality.</p>
+    </div>
+
+    <div class="chat-container">
+      <button id="chatbot-toggle-btn" class="chat-button bg-red-600 text-white hover:bg-red-700">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-8 h-8"><path fill-rule="evenodd" d="M4.848 9.044a.75.75 0 01.447.803l-2.585 9.406a.75.75 0 01-1.353-.372L.373 11.2a1.5 0 011.06-1.925l8.77-2.175a.75.75 0 01-.274 1.488l-5.748 1.424zM11.516 1.405a.75.75 0 01.372 1.353l-9.406 2.585a.75.75 0 01-.803-.447l-1.925-8.77a1.5 1.5 0 011.925-1.06l8.77 1.925z" clip-rule="evenodd" /></svg>
+      </button>
+      <div id="chatbot-window" class="chat-window">
+        <div class="flex flex-col h-full bg-gray-100 rounded-xl shadow-lg overflow-hidden">
+          <div class="bg-white p-4 flex items-center justify-between shadow-sm">
+            <div class="flex items-center space-x-3"><img src="https://placehold.co/40x40/c026d3/ffffff?text=AI" alt="Chatbot Avatar" class="rounded-full"><div><h2 class="font-bold text-gray-900">BFP Assistant</h2><p class="text-sm text-gray-500">Chatbot</p></div></div>
+            <button id="chat-close-btn" class="text-gray-400 hover:text-gray-600"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6"><path fill-rule="evenodd" d="M5.47 5.47a.75.75 0 011.06 0L12 10.94l5.47-5.47a.75.75 0 111.06 1.06L13.06 12l5.47 5.47a.75.75 0 11-1.06 1.06L12 13.06l-5.47 5.47a.75.75 0 01-1.06-1.06L10.94 12 5.47 6.53a.75.75 0 010-1.06z" clip-rule="evenodd" /></svg></button>
+          </div>
+          <div class="flex-1 p-4 overflow-y-auto space-y-4">
+            <!-- Quick questions will be dynamically inserted here by JavaScript -->
+          </div>
+          <div class="bg-white p-4 border-t border-gray-200 flex items-center space-x-4">
+            <input type="text" placeholder="Type a message..." class="flex-1 p-3 rounded-full bg-gray-100 focus:outline-none focus:ring-2 focus:ring-red-500">
+            <button class="bg-red-600 text-white p-3 rounded-full hover:bg-red-700 transition"><svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6"><path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.917H13.5a.75.75 0 010 1.5H4.984l-2.432 7.917a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" /></svg></button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script>
+        // BFP Assistance Chatbot Implementation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Updated selectors to match the HTML structure
+            const chatInput = document.querySelector('#chatbot-window input[type="text"]');
+            const sendButton = document.querySelector('#chatbot-window button');
+            const chatMessages = document.querySelector('#chatbot-window .flex-1');
+            const chatWindow = document.querySelector('#chatbot-window');
+            
+            // Chatbot toggle button elements
+            const chatbotToggleBtn = document.getElementById('chatbot-toggle-btn');
+            const chatCloseBtn = document.getElementById('chat-close-btn');
+            
+            // Function to add a message to the chat
+            function addMessage(text, isUser = false) {
+                const messageDiv = document.createElement('div');
+                messageDiv.className = `flex ${isUser ? 'justify-end' : 'justify-start'}`;
+                
+                const messageContent = document.createElement('div');
+                messageContent.className = `p-3 rounded-lg max-w-xs md:max-w-md ${isUser ? 'bg-red-600 text-white' : 'bg-gray-200 text-gray-800'}`;
+                messageContent.textContent = text;
+                
+                messageDiv.appendChild(messageContent);
+                chatMessages.appendChild(messageDiv);
+                
+                // Scroll to the bottom
+                chatMessages.scrollTop = chatMessages.scrollHeight;
+            }
+            
+            // Function to handle quick question clicks
+            function handleQuickQuestionClick(questionText, responseText, category) {
+                // Add user question to chat
+                addMessage(questionText, true);
+                
+                // Check if this is a navigation question
+                if (category === 'navigation') {
+                    handleNavigationQuestion(questionText, responseText);
+                } else {
+                    // Add bot response to chat
+                    setTimeout(() => {
+                        addMessage(responseText);
+                    }, 300);
+                }
+            }
+            
+            // Function to handle navigation questions
+            function handleNavigationQuestion(questionText, responseText) {
+                // Add bot response to chat
+                setTimeout(() => {
+                    addMessage(responseText);
+                }, 300);
+                
+                // Handle specific navigation actions
+                if (questionText.includes('Kids Zone')) {
+                    // Scroll to the Kids section
+                    const kidsButton = document.getElementById('btn-kids');
+                    if (kidsButton) {
+                        kidsButton.click();
+                        // Scroll to top to show the section
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                } else if (questionText.includes('Fire Safety Resources')) {
+                    // Scroll to the Professionals section
+                    const professionalsButton = document.getElementById('btn-professionals');
+                    if (professionalsButton) {
+                        professionalsButton.click();
+                        // Scroll to top to show the section
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                } else if (questionText.includes('printable')) {
+                    // For now, just inform the user
+                    // In a more complex implementation, you could scroll to a specific section
+                } else if (questionText.includes('contact')) {
+                    // For now, just inform the user
+                    // In a more complex implementation, you could scroll to a contact section
+                }
+            }
+            
+            // Function to create quick question buttons
+            function createQuickQuestionButtons(questions) {
+                // Create a container for quick questions
+                const quickQuestionsContainer = document.createElement('div');
+                quickQuestionsContainer.className = 'p-4 border-b border-gray-200 max-h-60 overflow-y-auto';
+                
+                // Add title
+                const title = document.createElement('h3');
+                title.className = 'font-bold text-gray-900 mb-3';
+                title.textContent = 'Quick Questions:';
+                quickQuestionsContainer.appendChild(title);
+                
+                // Create buttons for each category
+                for (const [category, questionsList] of Object.entries(questions)) {
+                    // Create category title
+                    const categoryTitle = document.createElement('h4');
+                    categoryTitle.className = 'font-semibold text-gray-700 mt-2 mb-1';
+                    categoryTitle.textContent = category;
+                    quickQuestionsContainer.appendChild(categoryTitle);
+                    
+                    // Create buttons for each question in the category
+                    questionsList.forEach(question => {
+                        const button = document.createElement('button');
+                        button.className = 'block w-full text-left p-2 mb-1 text-sm rounded hover:bg-gray-100 transition';
+                        button.textContent = question.question_text;
+                        button.addEventListener('click', () => {
+                            handleQuickQuestionClick(question.question_text, question.response_text, question.category);
+                        });
+                        quickQuestionsContainer.appendChild(button);
+                    });
+                }
+                
+                // Insert the quick questions container at the top of the chat window
+                chatWindow.insertBefore(quickQuestionsContainer, chatMessages);
+            }
+            
+            // Function to fetch quick questions from the API
+            async function fetchQuickQuestions() {
+                try {
+                    const response = await fetch('/api/quick-questions/');
+                    const questions = await response.json();
+                    createQuickQuestionButtons(questions);
+                } catch (error) {
+                    console.error('Error fetching quick questions:', error);
+                    // Add a simple error message if we can't fetch questions
+                    const errorMessage = document.createElement('div');
+                    errorMessage.className = 'p-4 text-center text-gray-500';
+                    errorMessage.textContent = 'Having trouble loading quick questions. Type your question below.';
+                    chatWindow.insertBefore(errorMessage, chatMessages);
+                }
+            }
+            
+            // Event listener for send button
+            sendButton.addEventListener('click', function() {
+                const message = chatInput.value.trim();
+                if (message) {
+                    addMessage(message, true);
+                    chatInput.value = '';
+                    
+                    // Add bot response to chat
+                    setTimeout(() => {
+                        addMessage("Thanks for your question! For more specific information, please try one of the quick questions above or contact our support team.");
+                    }, 300);
+                }
+            });
+            
+            // Event listener for Enter key
+            chatInput.addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') {
+                    e.preventDefault(); // Prevent any default form submission behavior
+                    sendButton.click();
+                }
+            });
+            
+            // Event listener for chatbot toggle button
+            if (chatbotToggleBtn) {
+                chatbotToggleBtn.addEventListener('click', function() {
+                    chatWindow.classList.toggle('open');
+                });
+            }
+            
+            // Event listener for chat close button
+            if (chatCloseBtn) {
+                chatCloseBtn.addEventListener('click', function() {
+                    chatWindow.classList.remove('open');
+                });
+            }
+            
+            // Fetch quick questions when the chatbot loads
+            fetchQuickQuestions();
+            
+            // Add initial welcome message
+            addMessage("Hello! I'm your BFP Assistant. I can help answer common fire safety questions. Try clicking one of the quick questions above or type your own question below.");
+        });
+    </script>
+</body>
+</html>

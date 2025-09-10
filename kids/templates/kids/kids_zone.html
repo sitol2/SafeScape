@@ -6,16 +6,32 @@
     <style>
         body { font-family: sans-serif; text-align: center; background-color: #f0f8ff; }
         h1 { color: #ff6347; }
+        .game-button {
+            display: inline-block;
+            padding: 15px 30px;
+            margin: 10px;
+            background-color: #4CAF50;
+            color: white;
+            text-decoration: none;
+            border-radius: 8px;
+            font-size: 18px;
+            font-weight: bold;
+            transition: background-color 0.3s;
+        }
+        .game-button:hover {
+            background-color: #45a049;
+        }
     </style>
 </head>
 <body>
     <h1>Welcome to the SafeScape Kids Zone!</h1>
     <p>Choose a game to play:</p>
 
-    <h2><a href="{% url 'hazard_house_game' %}">Play: Hazard in the House</a></h2>
-    <h2><a href="{% url 'stop_drop_roll_game' %}">Play: Stop, Drop, and Roll</a></h2> <br>
+    <a href="{% url 'hazard_house_game' %}" class="game-button">Play: Hazard in the House</a>
+    <a href="{% url 'stop_drop_roll_game' %}" class="game-button">Play: Stop, Drop, and Roll</a>
+    <a href="{% url 'hero_academy_game' %}" class="game-button">Start the Adventure</a>
 
-    <br>
+    <br><br>
     <a href="{% url 'home' %}">Back to Main Site</a>
 </body>
 </html>

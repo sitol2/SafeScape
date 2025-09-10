@@ -25,3 +25,25 @@ class Resource(models.Model):
     # This will make the resource titles appear correctly in the admin panel
     def __str__(self):
         return self.title
+
+class QuickQuestion(models.Model):
+    CATEGORY_CHOICES = [
+        ('emergency', 'Emergency Procedures'),
+        ('prevention', 'Fire Prevention'),
+        ('equipment', 'Safety Equipment'),
+        ('kids', 'For Kids'),
+        ('navigation', 'Website Navigation'),
+        ('general', 'General Information'),
+    ]
+    
+    category = models.CharField(max_length=20, choices=CATEGORY_CHOICES, default='general')
+    question_text = models.CharField(max_length=200)
+    response_text = models.TextField()
+    order = models.IntegerField(default=0)
+    is_active = models.BooleanField(default=True)
+    
+    class Meta:
+        ordering = ['category', 'order']
+    
+    def __str__(self):
+        return f"[{self.get_category_display()}] {self.question_text}"
