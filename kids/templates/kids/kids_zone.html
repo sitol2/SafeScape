@@ -1,37 +1,585 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>SafeScape Kids Zone</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: sans-serif; text-align: center; background-color: #f0f8ff; }
-        h1 { color: #ff6347; }
-        .game-button {
-            display: inline-block;
-            padding: 15px 30px;
-            margin: 10px;
-            background-color: #4CAF50;
-            color: white;
-            text-decoration: none;
-            border-radius: 8px;
-            font-size: 18px;
-            font-weight: bold;
-            transition: background-color 0.3s;
+        :root {
+            --primary-orange: #FF6B35;
+            --secondary-green: #4CAF50;
+            --tertiary-blue: #2196F3;
+            --background-yellow: #FFF1D6;
+            --accent-purple: #9C27B0;
+            --white: #FFFFFF;
+            --card-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            --btn-shadow: 0 4px 8px rgba(0,0,0,0.2);
         }
-        .game-button:hover {
-            background-color: #45a049;
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background-color: var(--background-yellow);
+            color: #333;
+            min-height: 100vh;
+            padding-bottom: 40px;
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, var(--primary-orange), #FF8C42);
+            padding: 20px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .header::before {
+            content: "";
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 150px;
+            height: 150px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="rgba(255,255,255,0.1)"/></svg>') no-repeat;
+            background-size: contain;
+        }
+
+        .mascot {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 15px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100"><circle cx="50" cy="40" r="25" fill="%23FFD700"/><circle cx="40" cy="35" r="3" fill="%23000"/><circle cx="60" cy="35" r="3" fill="%23000"/><path d="M45 50 Q50 55 55 50" stroke="%23000" stroke-width="2" fill="none"/><rect x="45" y="65" width="10" height="20" fill="%23FF6B35"/><rect x="35" y="70" width="8" height="25" fill="%234CAF50"/><rect x="57" y="70" width="8" height="25" fill="%234CAF50"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        h1 {
+            color: var(--white);
+            font-family: 'Fredoka One', cursive;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            margin-bottom: 10px;
+        }
+
+        .tagline {
+            color: var(--white);
+            font-size: 1.2rem;
+            font-weight: 700;
+            max-width: 600px;
+            margin: 0 auto;
+        }
+
+        /* Navigation */
+        .nav-container {
+            background-color: var(--white);
+            padding: 15px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .nav-tabs {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .nav-tab {
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-weight: 800;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            box-shadow: var(--btn-shadow);
+        }
+
+        .nav-tab:hover {
+            transform: translateY(-3px);
+        }
+
+        .nav-tab.active {
+            transform: scale(1.05);
+        }
+
+        .nav-tab.quizzes {
+            background: linear-gradient(135deg, var(--tertiary-blue), #5AA9E6);
+            color: var(--white);
+        }
+
+        .nav-tab.action {
+            background: linear-gradient(135deg, var(--primary-orange), #FF8C42);
+            color: var(--white);
+        }
+
+        .nav-tab.puzzles {
+            background: linear-gradient(135deg, var(--secondary-green), #66BB6A);
+            color: var(--white);
+        }
+
+        .nav-tab.personality {
+            background: linear-gradient(135deg, var(--accent-purple), #AB47BC);
+            color: var(--white);
+        }
+
+        /* Carousel Section */
+        .section-title {
+            text-align: center;
+            font-family: 'Fredoka One', cursive;
+            font-size: 2rem;
+            color: #333;
+            margin: 30px 0 20px;
+            position: relative;
+        }
+
+        .section-title::after {
+            content: "";
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: var(--primary-orange);
+            margin: 10px auto;
+            border-radius: 2px;
+        }
+
+        .carousel-container {
+            position: relative;
+            max-width: 1200px;
+            margin: 0 auto 40px;
+            overflow: hidden;
+            padding: 0 40px;
+        }
+
+        .carousel {
+            display: flex;
+            transition: transform 0.5s ease;
+            gap: 20px;
+        }
+
+        .carousel-item {
+            min-width: 300px;
+            background: var(--white);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+        }
+
+        .carousel-item:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+
+        .carousel-img {
+            height: 180px;
+            background-color: var(--tertiary-blue);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+        }
+
+        .carousel-content {
+            padding: 20px;
+        }
+
+        .carousel-content h3 {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .carousel-content p {
+            color: #666;
+            margin-bottom: 15px;
+            font-size: 0.95rem;
+        }
+
+        .play-btn {
+            background: linear-gradient(135deg, var(--primary-orange), #FF8C42);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--btn-shadow);
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .play-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+
+        /* Game Grid */
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 30px;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .game-card {
+            background: var(--white);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: var(--card-shadow);
+            transition: all 0.3s ease;
+            display: flex;
+            flex-direction: column;
+            height: 100%;
+        }
+
+        .game-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 15px 30px rgba(0,0,0,0.15);
+        }
+
+        .game-img {
+            height: 200px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 4rem;
+        }
+
+        .game-content {
+            padding: 20px;
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .game-content h3 {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.5rem;
+            margin-bottom: 10px;
+            color: #333;
+        }
+
+        .game-content p {
+            color: #666;
+            margin-bottom: 15px;
+            flex-grow: 1;
+        }
+
+        .game-meta {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+        }
+
+        .difficulty, .duration {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .see-more {
+            background: linear-gradient(135deg, var(--tertiary-blue), #5AA9E6);
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            border-radius: 50px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--btn-shadow);
+            width: 100%;
+            font-size: 1rem;
+        }
+
+        .see-more:hover {
+            transform: scale(1.03);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+
+        /* Back Button */
+        .back-btn {
+            display: block;
+            text-align: center;
+            margin: 40px auto 20px;
+            background: linear-gradient(135deg, #666, #888);
+            color: white;
+            padding: 12px 30px;
+            border-radius: 50px;
+            font-weight: 800;
+            text-decoration: none;
+            transition: all 0.3s ease;
+            box-shadow: var(--btn-shadow);
+            max-width: 200px;
+        }
+
+        .back-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header {
+                padding: 15px 10px;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .tagline {
+                font-size: 1rem;
+            }
+            
+            .nav-tab {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+            }
+            
+            .game-grid {
+                grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+                gap: 20px;
+            }
+            
+            .carousel-item {
+                min-width: 250px;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .nav-tabs {
+                gap: 5px;
+            }
+            
+            .nav-tab {
+                padding: 8px 12px;
+                font-size: 0.8rem;
+            }
+            
+            .game-grid {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <h1>Welcome to the SafeScape Kids Zone!</h1>
-    <p>Choose a game to play:</p>
+    <!-- Header with Mascot -->
+    <header class="header">
+        <div class="mascot"></div>
+        <h1>SafeScape Kids Zone</h1>
+        <p class="tagline">Learn Fire Safety with Fun! 🔥🛡️😊</p>
+    </header>
 
-    <a href="{% url 'hazard_house_game' %}" class="game-button">Play: Hazard in the House</a>
-    <a href="{% url 'stop_drop_roll_game' %}" class="game-button">Play: Stop, Drop, and Roll</a>
-    <a href="{% url 'hero_academy_game' %}" class="game-button">Start the Adventure</a>
+    <!-- Navigation Tabs -->
+    <div class="nav-container">
+        <div class="nav-tabs">
+            <div class="nav-tab quizzes active">🧠 Quizzes</div>
+            <div class="nav-tab action">🎮 Action Games</div>
+            <div class="nav-tab puzzles">🧩 Puzzles</div>
+            <div class="nav-tab personality">😊 Personality</div>
+        </div>
+    </div>
 
-    <br><br>
-    <a href="{% url 'home' %}">Back to Main Site</a>
+    <!-- New and Popular Carousel -->
+    <h2 class="section-title">🔥 New & Popular</h2>
+    <div class="carousel-container">
+        <div class="carousel">
+            <div class="carousel-item">
+                <div class="carousel-img">🏠</div>
+                <div class="carousel-content">
+                    <h3>Hazard House Challenge</h3>
+                    <p>Find all the fire hazards in the house before time runs out!</p>
+                    <button class="play-btn">Play Now! 🚀</button>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="carousel-img">🔥</div>
+                <div class="carousel-content">
+                    <h3>Stop, Drop & Roll</h3>
+                    <p>Learn the correct technique with our interactive game!</p>
+                    <button class="play-btn">Play Now! 🚀</button>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="carousel-img">🦸</div>
+                <div class="carousel-content">
+                    <h3>Hero Academy</h3>
+                    <p>Become a fire safety hero in our adventure game!</p>
+                    <button class="play-btn">Play Now! 🚀</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Game Categories Grid -->
+    <h2 class="section-title">🎮 Game Categories</h2>
+    <div class="game-grid">
+        <!-- Fire Safety Basics Card -->
+        <div class="game-card">
+            <div class="game-img" style="background-color: #FFECB3;">🔥</div>
+            <div class="game-content">
+                <h3>Fire Safety Basics</h3>
+                <p>Learn the fundamental rules of fire safety in a fun way!</p>
+                <div class="game-meta">
+                    <div class="difficulty">⭐ Easy</div>
+                    <div class="duration">⏱️ 5 mins</div>
+                </div>
+                <a href="{% url 'hazard_house_game' %}" class="see-more">See More ➡️</a>
+            </div>
+        </div>
+
+        <!-- Emergency Response Card -->
+        <div class="game-card">
+            <div class="game-img" style="background-color: #BBDEFB;">🚨</div>
+            <div class="game-content">
+                <h3>Emergency Response</h3>
+                <p>Practice what to do in case of a fire emergency!</p>
+                <div class="game-meta">
+                    <div class="difficulty">⭐⭐ Medium</div>
+                    <div class="duration">⏱️ 10 mins</div>
+                </div>
+                <a href="{% url 'stop_drop_roll_game' %}" class="see-more">See More ➡️</a>
+            </div>
+        </div>
+
+        <!-- Home Safety Card -->
+        <div class="game-card">
+            <div class="game-img" style="background-color: #C8E6C9;">🏠</div>
+            <div class="game-content">
+                <h3>Home Safety</h3>
+                <p>Make your home a safer place with our interactive guide!</p>
+                <div class="game-meta">
+                    <div class="difficulty">⭐⭐⭐ Hard</div>
+                    <div class="duration">⏱️ 15 mins</div>
+                </div>
+                <a href="{% url 'hero_academy_game' %}" class="see-more">See More ➡️</a>
+            </div>
+        </div>
+
+        <!-- Fire Extinguisher Card -->
+        <div class="game-card">
+            <div class="game-img" style="background-color: #FFCCBC;">🧯</div>
+            <div class="game-content">
+                <h3>Fire Extinguisher</h3>
+                <p>Learn how to use a fire extinguisher properly!</p>
+                <div class="game-meta">
+                    <div class="difficulty">⭐⭐ Medium</div>
+                    <div class="duration">⏱️ 8 mins</div>
+                </div>
+                <button class="see-more">See More ➡️</button>
+            </div>
+        </div>
+
+        <!-- Escape Plan Card -->
+        <div class="game-card">
+            <div class="game-img" style="background-color: #E1BEE7;">🏃</div>
+            <div class="game-content">
+                <h3>Escape Plan</h3>
+                <p>Create and practice your home fire escape plan!</p>
+                <div class="game-meta">
+                    <div class="difficulty">⭐⭐⭐ Hard</div>
+                    <div class="duration">⏱️ 20 mins</div>
+                </div>
+                <button class="see-more">See More ➡️</button>
+            </div>
+        </div>
+
+        <!-- Kitchen Safety Card -->
+        <div class="game-card">
+            <div class="game-img" style="background-color: #F0F4C3;">🍳</div>
+            <div class="game-content">
+                <h3>Kitchen Safety</h3>
+                <p>Learn how to stay safe while cooking!</p>
+                <div class="game-meta">
+                    <div class="difficulty">⭐ Easy</div>
+                    <div class="duration">⏱️ 6 mins</div>
+                </div>
+                <button class="see-more">See More ➡️</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Back to Main Site -->
+    <a href="{% url 'home' %}" class="back-btn">← Back to Main Site</a>
+
+    <script>
+        // Simple carousel functionality
+        document.addEventListener('DOMContentLoaded', function() {
+            const carousel = document.querySelector('.carousel');
+            const items = document.querySelectorAll('.carousel-item');
+            const itemCount = items.length;
+            let currentIndex = 0;
+
+            // Auto-rotate carousel every 5 seconds
+            setInterval(() => {
+                currentIndex = (currentIndex + 1) % itemCount;
+                carousel.style.transform = `translateX(-${currentIndex * (items[0].offsetWidth + 20)}px)`;
+            }, 5000);
+
+            // Add hover pause effect
+            carousel.addEventListener('mouseenter', () => {
+                clearInterval(autoRotate);
+            });
+
+            carousel.addEventListener('mouseleave', () => {
+                autoRotate = setInterval(() => {
+                    currentIndex = (currentIndex + 1) % itemCount;
+                    carousel.style.transform = `translateX(-${currentIndex * (items[0].offsetWidth + 20)}px)`;
+                }, 5000);
+            });
+
+            // Tab switching functionality
+            const tabs = document.querySelectorAll('.nav-tab');
+            tabs.forEach(tab => {
+                tab.addEventListener('click', function() {
+                    tabs.forEach(t => t.classList.remove('active'));
+                    this.classList.add('active');
+                    
+                    // In a real implementation, this would load content for the selected tab
+                    // For now, we'll just show a visual indication
+                });
+            });
+
+            // Play button functionality for carousel items
+            const playButtons = document.querySelectorAll('.play-btn');
+            playButtons.forEach(button => {
+                button.addEventListener('click', function() {
+                    // Animation effect when clicking play
+                    this.style.transform = 'scale(0.95)';
+                    setTimeout(() => {
+                        this.style.transform = '';
+                    }, 150);
+                    
+                    // In a real implementation, this would navigate to the game
+                    // For now, we'll just show an alert
+                    const gameName = this.closest('.carousel-content').querySelector('h3').textContent;
+                    alert(`Starting ${gameName}! This would navigate to the actual game.`);
+                });
+            });
+        });
+    </script>
 </body>
 </html>

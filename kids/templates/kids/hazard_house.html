@@ -3,36 +3,385 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Hazard in the House Game</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hazard House Challenge - SafeScape Kids</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
-        body { font-family: sans-serif; text-align: center; background-color: #f0f8ff; }
-        h1 { color: #ff6347; }
-        #game-container { position: relative; width: 600px; height: 400px; margin: auto; cursor: pointer; }
-        #room-image { width: 100%; height: 100%; }
+        :root {
+            --primary-orange: #FF6B35;
+            --secondary-green: #4CAF50;
+            --tertiary-blue: #2196F3;
+            --background-yellow: #FFF1D6;
+            --accent-purple: #9C27B0;
+            --white: #FFFFFF;
+            --card-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            --btn-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, var(--background-yellow), #E3F2FD);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, var(--primary-orange), #FF8C42);
+            padding: 20px;
+            text-align: center;
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: "";
+            position: absolute;
+            top: -50px;
+            right: -50px;
+            width: 150px;
+            height: 150px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="rgba(255,255,255,0.1)"/></svg>') no-repeat;
+            background-size: contain;
+        }
+
+        .mascot {
+            width: 80px;
+            height: 80px;
+            margin: 0 auto 15px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100"><circle cx="50" cy="40" r="25" fill="%23FFD700"/><circle cx="40" cy="35" r="3" fill="%23000"/><circle cx="60" cy="35" r="3" fill="%2300"/><path d="M45 50 Q50 55 55 50" stroke="%23000" stroke-width="2" fill="none"/><rect x="45" y="65" width="10" height="20" fill="%23FF6B35"/><rect x="35" y="70" width="8" height="25" fill="%234CAF50"/><rect x="57" y="70" width="8" height="25" fill="%234CAF50"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+
+        h1 {
+            color: var(--white);
+            font-family: 'Fredoka One', cursive;
+            font-size: 2.5rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            margin-bottom: 10px;
+        }
+
+        .tagline {
+            color: var(--white);
+            font-size: 1.2rem;
+            font-weight: 700;
+            max-width: 600px;
+            margin: 0 auto 15px;
+        }
+
+        /* Game Info Section */
+        .game-info {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        .game-info h2 {
+            color: var(--primary-orange);
+            font-family: 'Fredoka One', cursive;
+            font-size: 2rem;
+            margin-bottom: 15px;
+        }
+
+        .game-info p {
+            font-size: 1.1rem;
+            margin-bottom: 20px;
+            color: #555;
+        }
+
+        .instructions {
+            background: #E3F2FD;
+            border-radius: 15px;
+            padding: 15px;
+            margin: 20px 0;
+        }
+
+        .instructions h3 {
+            color: var(--tertiary-blue);
+            margin-bottom: 10px;
+        }
+
+        /* Game Container */
+        .game-container-wrapper {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+            text-align: center;
+        }
+
+        #game-container {
+            position: relative;
+            width: 100%;
+            max-width: 800px;
+            height: 500px;
+            margin: 0 auto;
+            cursor: pointer;
+            border: 5px solid var(--primary-orange);
+            border-radius: 15px;
+            overflow: hidden;
+        }
+
+        #room-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        /* Progress Section */
+        .progress-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: var(--white);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 30px;
+        }
+
+        .hazards-found {
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.5rem;
+            color: var(--secondary-green);
+        }
+
+        .hazards-found span {
+            font-size: 2rem;
+        }
+
+        .feedback-message {
+            font-weight: 800;
+            font-size: 1.3rem;
+            text-align: center;
+            min-height: 30px;
+            padding: 10px;
+            border-radius: 10px;
+            background: #FFF8E1;
+        }
+
+        .feedback-message.correct {
+            color: var(--secondary-green);
+            background: #E8F5E9;
+        }
+
+        .feedback-message.incorrect {
+            color: var(--primary-orange);
+            background: #FFEBEE;
+        }
+
+        /* Buttons */
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        .game-btn {
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.2rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--btn-shadow);
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .game-btn:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.2);
+        }
+
+        .play-again-btn {
+            background: linear-gradient(135deg, var(--secondary-green), #66BB6A);
+            color: var(--white);
+        }
+
+        .back-btn {
+            background: linear-gradient(135deg, var(--tertiary-blue), #5AA9E6);
+            color: var(--white);
+            text-decoration: none;
+        }
+
+        .hint-btn {
+            background: linear-gradient(135deg, var(--accent-purple), #AB47BC);
+            color: var(--white);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 20px;
+            color: #666;
+            font-size: 1rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .tagline {
+                font-size: 1rem;
+            }
+            
+            #game-container {
+                height: 400px;
+            }
+            
+            .game-btn {
+                padding: 12px 20px;
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .header {
+                padding: 15px 10px;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            #game-container {
+                height: 300px;
+            }
+            
+            .progress-section {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .button-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .game-btn {
+                width: 100%;
+                max-width: 300px;
+                justify-content: center;
+            }
+        }
     </style>
 </head>
 <body>
-    <h1>Find the Fire Hazards!</h1>
-    <p>Click on the things in the room that could be dangerous.</p>
-    
-    <div id="game-container">
-        <img id="room-image" src="{% static 'assets/images/sample_room.jpg' %}" alt="A sample room">
-    </div>
+    <div class="container">
+        <!-- Header with Mascot -->
+        <header class="header">
+            <div class="mascot"></div>
+            <h1>Hazard House Challenge</h1>
+            <p class="tagline">Find all the fire hazards in the house! 🔍🏠</p>
+        </header>
 
-    <br>
-    <a href="{% url 'kids_zone_home' %}">Back to Kids Zone</a>
+        <!-- Game Info -->
+        <div class="game-info">
+            <h2>Fire Safety Mission</h2>
+            <p>Click on the things in the room that could be dangerous. Find all the fire hazards to complete the mission!</p>
+            
+            <div class="instructions">
+                <h3>How to Play:</h3>
+                <p>🔍 Look carefully at the room and find potential fire hazards</p>
+                <p>🖱️ Click on objects that look dangerous</p>
+                <p>✅ Find all hazards to become a Fire Safety Hero!</p>
+            </div>
+        </div>
+
+        <!-- Progress Section -->
+        <div class="progress-section">
+            <div class="hazards-found">Hazards Found: <span id="hazards-count">0</span>/2</div>
+            <div class="feedback-message" id="feedback-message">Ready to find some hazards? Click on dangerous objects!</div>
+        </div>
+
+        <!-- Game Container -->
+        <div class="game-container-wrapper">
+            <div id="game-container">
+                <img id="room-image" src="{% static 'assets/images/sample_room.jpg' %}" alt="A sample room with fire hazards">
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="button-container">
+            <button class="game-btn hint-btn" id="hint-btn">💡 Need a Hint?</button>
+            <button class="game-btn play-again-btn" id="play-again-btn">🔄 Play Again</button>
+            <a href="/#kids" class="game-btn back-btn">← Back to Kids Zone</a>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Made with ❤️ for Fire Safety Education | SafeScape Kids</p>
+        </div>
+    </div>
 
     <script>
         // Define our hazard "hotspots" as objects
         // Each hotspot has x/y coordinates for its top-left and bottom-right corners.
-        // NOTE: You will need to adjust these coordinates to match the hazards in your own image.
         const hotspots = [
-            { x1: 50, y1: 150, x2: 150, y2: 250, name: "overloaded socket" },
-            { x1: 400, y1: 200, x2: 500, y2: 300, name: "candle near curtains" }
+            { x1: 50, y1: 150, x2: 150, y2: 250, name: "Overloaded Socket 🔌" },
+            { x1: 400, y1: 200, x2: 500, y2: 300, name: "Candle Near Curtains 🕯️" }
         ];
 
-        const gameContainer = document.getElementById('game-container');
+        // Game state
+        let foundHazards = [];
+        let totalHazards = hotspots.length;
 
+        // DOM elements
+        const gameContainer = document.getElementById('game-container');
+        const hazardsCount = document.getElementById('hazards-count');
+        const feedbackMessage = document.getElementById('feedback-message');
+        const hintBtn = document.getElementById('hint-btn');
+        const playAgainBtn = document.getElementById('play-again-btn');
+
+        // Initialize game
+        function initGame() {
+            foundHazards = [];
+            hazardsCount.textContent = '0';
+            feedbackMessage.textContent = 'Ready to find some hazards? Click on dangerous objects!';
+            feedbackMessage.className = 'feedback-message';
+        }
+
+        // Show hint
+        function showHint() {
+            if (foundHazards.length < totalHazards) {
+                feedbackMessage.textContent = 'Hint: Look for electrical hazards and open flames!';
+                feedbackMessage.className = 'feedback-message';
+            }
+        }
+
+        // Game logic
         gameContainer.addEventListener('click', function(event) {
             // Get the user's click coordinates relative to the image
             const rect = gameContainer.getBoundingClientRect();
@@ -41,18 +390,52 @@
 
             let foundHazard = false;
             // Loop through our hotspots to see if the click was inside any of them
-            for (const spot of hotspots) {
+            for (let i = 0; i < hotspots.length; i++) {
+                const spot = hotspots[i];
+                
+                // Skip if already found
+                if (foundHazards.includes(i)) continue;
+                
                 if (clickX >= spot.x1 && clickX <= spot.x2 && clickY >= spot.y1 && clickY <= spot.y2) {
-                    alert('You found a hazard: ' + spot.name + '! Good job!');
+                    foundHazards.push(i);
+                    hazardsCount.textContent = foundHazards.length;
+                    
+                    feedbackMessage.textContent = `Great job! You found: ${spot.name}`;
+                    feedbackMessage.className = 'feedback-message correct';
+                    
+                    // Check for win condition
+                    if (foundHazards.length === totalHazards) {
+                        setTimeout(() => {
+                            feedbackMessage.textContent = '🎉 Congratulations! You found all the hazards! You\'re a Fire Safety Hero!';
+                            feedbackMessage.className = 'feedback-message correct';
+                        }, 1000);
+                    }
+                    
                     foundHazard = true;
                     break; // Stop checking once we've found one
                 }
             }
 
-            if (!foundHazard) {
-                alert('That looks safe. Try again!');
+            if (!foundHazard && foundHazards.length < totalHazards) {
+                feedbackMessage.textContent = 'That looks safe. Keep looking for hazards!';
+                feedbackMessage.className = 'feedback-message incorrect';
             }
         });
+
+        // Event listeners
+        hintBtn.addEventListener('click', showHint);
+        
+        playAgainBtn.addEventListener('click', function() {
+            // Animation effect
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = '';
+                initGame();
+            }, 150);
+        });
+
+        // Initialize game on load
+        document.addEventListener('DOMContentLoaded', initGame);
     </script>
 </body>
 </html>

@@ -1,50 +1,396 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hero Academy - Fire Safety Game</title>
-    {% load static %}
+    <title>Hero Academy - SafeScape Kids</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@40;700;800&display=swap" rel="stylesheet">
     <style>
-        body {
+        :root {
+            --primary-orange: #FF6B35;
+            --secondary-green: #4CAF50;
+            --tertiary-blue: #2196F3;
+            --background-yellow: #FFF1D6;
+            --accent-purple: #9C27B0;
+            --white: #FFFFFF;
+            --card-shadow: 0 10px 20px rgba(0,0,0,0.1);
+            --btn-shadow: 0 4px 8px rgba(0,0,0,0.2);
+        }
+
+        * {
             margin: 0;
             padding: 0;
-            overflow: hidden;
-            background-color: #000;
+            box-sizing: border-box;
         }
-        #game-container {
-            width: 100vw;
+
+        body {
+            font-family: 'Nunito', sans-serif;
+            background: linear-gradient(135deg, var(--background-yellow), #E3F2FD);
+            color: #333;
+            min-height: 100vh;
+            padding: 20px;
+            overflow: hidden;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
             height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Header Styles */
+        .header {
+            background: linear-gradient(135deg, var(--primary-orange), #FF8C42);
+            padding: 15px 20px;
+            border-radius: 20px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 20px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .header::before {
+            content: "";
+            position: absolute;
+            top: -30px;
+            right: -30px;
+            width: 100px;
+            height: 100px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="40" fill="rgba(255,255,255,0.1)"/></svg>') no-repeat;
+            background-size: contain;
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
+
+        .mascot {
+            width: 60px;
+            height: 60px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100"><circle cx="50" cy="40" r="25" fill="%23FFD700"/><circle cx="40" cy="35" r="3" fill="%23000"/><circle cx="60" cy="35" r="3" fill="%2300"/><path d="M45 50 Q50 55 55 50" stroke="%23000" stroke-width="2" fill="none"/><rect x="45" y="65" width="10" height="20" fill="%23FF6B35"/><rect x="35" y="70" width="8" height="25" fill="%234CAF50"/><rect x="57" y="70" width="8" height="25" fill="%234CAF50"/></svg>') no-repeat center;
+            background-size: contain;
+            animation: bounce 2s infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        h1 {
+            color: var(--white);
+            font-family: 'Fredoka One', cursive;
+            font-size: 2rem;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            margin: 0;
+        }
+
+        .tagline {
+            color: var(--white);
+            font-size: 1rem;
+            font-weight: 700;
+            margin: 0;
+        }
+
+        /* Game Info Section */
+        .game-info {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 15px 20px;
+            box-shadow: var(--card-shadow);
+            margin-bottom: 20px;
+            text-align: center;
+        }
+
+        .game-info h2 {
+            color: var(--primary-orange);
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.5rem;
+            margin: 0 0 10px 0;
+        }
+
+        .game-info p {
+            font-size: 1rem;
+            margin: 0;
+            color: #555;
+        }
+
+        /* Game Container */
+        .game-container-wrapper {
+            background: var(--white);
+            border-radius: 20px;
+            padding: 15px;
+            box-shadow: var(--card-shadow);
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        #game-container {
+            width: 100%;
+            flex-grow: 1;
             display: flex;
             justify-content: center;
             align-items: center;
+            border-radius: 15px;
+            overflow: hidden;
+            position: relative;
         }
+
         #game-frame {
             width: 100%;
             height: 100%;
             border: none;
         }
-        .back-button {
+
+        /* Loading Screen */
+        .loading-screen {
             position: absolute;
-            top: 20px;
-            left: 20px;
-            z-index: 1000;
-            background-color: #ff6b35;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 5px;
-            text-decoration: none;
-            font-weight: bold;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--tertiary-blue), #5AA9E6);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+            border-radius: 15px;
         }
-        .back-button:hover {
-            background-color: #e55a2b;
+
+        .loading-spinner {
+            width: 80px;
+            height: 80px;
+            border: 10px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--white);
+            animation: spin 1s ease-in-out infinite;
+            margin-bottom: 20px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .loading-text {
+            color: var(--white);
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.5rem;
+            text-align: center;
+        }
+
+        /* Buttons */
+        .button-container {
+            display: flex;
+            justify-content: center;
+            gap: 15px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .game-btn {
+            padding: 12px 25px;
+            border-radius: 50px;
+            font-family: 'Fredoka One', cursive;
+            font-size: 1.1rem;
+            font-weight: 700;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: var(--btn-shadow);
+            border: none;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .game-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 6px 12px rgba(0,0,0,0.2);
+        }
+
+        .back-btn {
+            background: linear-gradient(135deg, var(--tertiary-blue), #5AA9E6);
+            color: var(--white);
+            text-decoration: none;
+        }
+
+        .fullscreen-btn {
+            background: linear-gradient(135deg, var(--accent-purple), #AB47BC);
+            color: var(--white);
+        }
+
+        .help-btn {
+            background: linear-gradient(135deg, var(--secondary-green), #66BB6A);
+            color: var(--white);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 15px;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            h1 {
+                font-size: 1.8rem;
+            }
+            
+            .tagline {
+                font-size: 0.9rem;
+            }
+            
+            .game-btn {
+                padding: 10px 20px;
+                font-size: 1rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            body {
+                padding: 10px;
+            }
+            
+            .header {
+                padding: 10px 15px;
+            }
+            
+            h1 {
+                font-size: 1.5rem;
+            }
+            
+            .button-container {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .game-btn {
+                width: 100%;
+                max-width: 250px;
+                justify-content: center;
+            }
         }
     </style>
 </head>
 <body>
-    <a href="{% url 'kids_zone_home' %}" class="back-button">Back to Kids Zone</a>
-    <div id="game-container">
-        <iframe id="game-frame" src="{% static 'game/index.html' %}"></iframe>
+    <div class="container">
+        <!-- Header with Mascot -->
+        <header class="header">
+            <div class="header-content">
+                <div class="mascot"></div>
+                <div>
+                    <h1>Hero Academy</h1>
+                    <p class="tagline">Become a Fire Safety Hero! 🦸‍♂️🔥</p>
+                </div>
+            </div>
+        </header>
+
+        <!-- Game Info -->
+        <div class="game-info">
+            <h2>Fire Safety Adventure</h2>
+            <p>Embark on an exciting journey to learn fire safety skills!</p>
+        </div>
+
+        <!-- Game Container -->
+        <div class="game-container-wrapper">
+            <div id="game-container">
+                <!-- Loading Screen -->
+                <div class="loading-screen" id="loading-screen">
+                    <div class="loading-spinner"></div>
+                    <div class="loading-text">Loading Hero Academy...</div>
+                </div>
+                
+                <!-- Game Frame -->
+                <iframe id="game-frame" src="{% static 'game/index.html' %}"></iframe>
+            </div>
+
+            <!-- Buttons -->
+            <div class="button-container">
+                <a href="/#kids" class="game-btn back-btn">← Back to Kids Zone</a>
+                <button class="game-btn fullscreen-btn" id="fullscreen-btn">⛶ Fullscreen</button>
+                <button class="game-btn help-btn" id="help-btn">❓ Help</button>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="footer">
+            <p>Made with ❤️ for Fire Safety Education | SafeScape Kids</p>
+        </div>
     </div>
+
+    <script>
+        // DOM elements
+        const gameFrame = document.getElementById('game-frame');
+        const loadingScreen = document.getElementById('loading-screen');
+        const fullscreenBtn = document.getElementById('fullscreen-btn');
+        const helpBtn = document.getElementById('help-btn');
+
+        // Hide loading screen when game is loaded
+        gameFrame.addEventListener('load', function() {
+            setTimeout(() => {
+                loadingScreen.style.opacity = '0';
+                setTimeout(() => {
+                    loadingScreen.style.display = 'none';
+                }, 500);
+            }, 1000);
+        });
+
+        // Fullscreen functionality
+        fullscreenBtn.addEventListener('click', function() {
+            const gameContainer = document.getElementById('game-container');
+            
+            if (gameContainer.requestFullscreen) {
+                gameContainer.requestFullscreen();
+            } else if (gameContainer.webkitRequestFullscreen) {
+                gameContainer.webkitRequestFullscreen();
+            } else if (gameContainer.msRequestFullscreen) {
+                gameContainer.msRequestFullscreen();
+            }
+            
+            // Animation effect
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = '';
+            }, 150);
+        });
+
+        // Help functionality
+        helpBtn.addEventListener('click', function() {
+            alert('Welcome to Hero Academy!\n\nUse arrow keys to move your character.\nSpacebar to interact with objects.\nComplete missions to learn fire safety skills!\n\nIf you experience any issues, try refreshing the page.');
+            
+            // Animation effect
+            this.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                this.style.transform = '';
+            }, 150);
+        });
+
+        // Exit fullscreen when Back to Kids Zone is clicked
+        document.querySelector('.back-btn').addEventListener('click', function() {
+            if (document.exitFullscreen) {
+                document.exitFullscreen();
+            } else if (document.webkitExitFullscreen) {
+                document.webkitExitFullscreen();
+            } else if (document.msExitFullscreen) {
+                document.msExitFullscreen();
+            }
+        });
+    </script>
 </body>
 </html>
